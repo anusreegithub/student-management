@@ -1,0 +1,135 @@
+
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+    <div class="container">
+        <header>
+            <h1>Task Master</h1>
+            <p class="subtitle">Organize your life, one task at a time</p>
+        </header>
+
+        <!-- Form to Add a New Todo -->
+        <div class="card form-card">
+            <h2>Add New Task</h2>
+            <form action="/add" method="POST">
+                <div class="form-group">
+                    <input type="text" name="title" placeholder="Title" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="description" placeholder="Description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <select name="priority">
+                        <option value="" disabled selected>Select Priority</option>
+                        <option value="1">High Priority</option>
+                        <option value="2">Medium Priority</option>
+                        <option value="3">Low Priority</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Task</button>
+            </form>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="pending">Pending Tasks</button>
+            <button class="tab-btn" data-tab="completed">Completed Tasks</button>
+        </div>
+
+        <div class="tab-content active" id="pending">
+            <div class="card">
+                <h2>Pending Tasks</h2>
+                {{#if todos.length}}
+                <ul class="todo-list">
+                    {{#each todos}}
+                        <li class="todo-item">
+                            <div class="todo-content">
+                                <div class="todo-header">
+                                    <strong>{{this.title}}</strong>
+                                    {{#if this.priority}}
+                                        <span class="priority priority-{{this.priority}}">
+                                            {{#if (eq this.priority 1)}}High{{/if}}
+                                            {{#if (eq this.priority 2)}}Medium{{/if}}
+                                            {{#if (eq this.priority 3)}}Low{{/if}}
+                                        </span>
+                                    {{/if}}
+                                </div>
+                                <p class="todo-description">{{this.description}}</p>
+                            </div>
+                            <div class="todo-actions">
+                                <!-- Complete Button -->
+                                <form action="/complete/{{this.id}}" method="POST">
+                                    <button type="submit" class="btn btn-success">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    </button>
+                                </form>
+
+                                <!-- Delete Button -->
+                                <form action="/delete/{{this.id}}" method="POST">
+                                    <button type="submit" class="btn btn-danger">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                    {{/each}}
+                </ul>
+                {{else}}
+                <div class="empty-state">
+                    <p>No pending tasks. Add one above!</p>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="tab-content" id="completed">
+            <div class="card">
+                <h2>Completed Tasks</h2>
+                {{#if completedTodos.length}}
+                <ul class="todo-list">
+                    {{#each completedTodos}}
+                        <li class="todo-item completed">
+                            <div class="todo-content">
+                                <div class="todo-header">
+                                    <strong>{{this.title}}</strong>
+                                    {{#if this.priority}}
+                                        <span class="priority priority-{{this.priority}}">
+                                            {{#if (eq this.priority 1)}}High{{/if}}
+                                            {{#if (eq this.priority 2)}}Medium{{/if}}
+                                            {{#if (eq this.priority 3)}}Low{{/if}}
+                                        </span>
+                                    {{/if}}
+                                </div>
+                                <p class="todo-description">{{this.description}}</p>
+                            </div>
+                        </li>
+                    {{/each}}
+                </ul>
+                {{else}}
+                <div class="empty-state">
+                    <p>No completed tasks yet.</p>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked button and corresponding content
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
