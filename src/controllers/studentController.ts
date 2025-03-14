@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import Student from "../models/studentModel";
-
+import { ApiResponse } from "../models/apiResponse";
+import { Student } from "../models/studentModel";
 
 class StudentController {
   static async createdStudent(req: Request, res: Response): Promise<void> {
@@ -14,13 +14,10 @@ class StudentController {
 
       const student = new Student({ name, age, email, course });
       await student.save();
-
-      res
-        .status(201)
-        .json({
-          message: "Student added successfully",
-          student,
-        }) ;
+      res.status(201).json({
+        message: "Student added successfully",
+        student,
+      } as ApiResponse<typeof Student>);
     } catch (error) {
       res.status(500).json({ message: "Server error", error });
     }
